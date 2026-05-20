@@ -8,6 +8,17 @@ Structure:
 
 Quick start (requires Node.js):
 
+Auto-start backend + frontend together
+
+```bash
+npm run setup
+npm run dev
+```
+
+This runs both:
+- backend dev API server (Express + nodemon)
+- frontend dev server (Next.js)
+
 Backend
 
 ```bash
