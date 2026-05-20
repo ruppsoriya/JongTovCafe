@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,body,#__next{height:100%}
+body{background-color:#f6efe8}
+
+.text-coffee{color:#3b2f2f}
+.bg-cream{background-color:#f6efe8}
