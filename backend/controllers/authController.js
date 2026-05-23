@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
     if (user) return res.status(400).json({ message: 'User exists' });
     const hashed = await bcrypt.hash(password, 10);
     user = await User.create({ name, email, password: hashed });
-    res.json({ token: genToken(user.id), user: { id: user.id, name: user.name, email: user.email } });
+    res.json({ token: genToken(user.id), user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   } catch (err) { res.status(500).json({ message: err.message }); }
 };
 
@@ -22,12 +22,12 @@ exports.login = async (req, res) => {
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
-    res.json({ token: genToken(user.id), user: { id: user.id, name: user.name, email: user.email } });
+    res.json({ token: genToken(user.id), user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   } catch (err) { res.status(500).json({ message: err.message }); }
 };
 
 exports.me = async (req, res) => {
-  res.json({ id: req.user.id, name: req.user.name, email: req.user.email });
+  res.json({ id: req.user.id, name: req.user.name, email: req.user.email, role: req.user.role });
 };
 
 exports.listFavorites = async (req, res) => {
@@ -60,6 +60,18 @@ exports.removeFavorite = async (req, res) => {
     if (!cafe) return res.status(404).json({ message: 'Cafe not found' });
     await user.removeFavoriteCafe(cafe);
     res.json({ message: 'Removed from favorites' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.listUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ['id', 'name', 'email', 'role', 'preferences', 'createdAt'],
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

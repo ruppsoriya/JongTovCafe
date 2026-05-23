@@ -1,11 +1,23 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const path = require('path');
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: path.join(__dirname, '..', 'data', 'database.sqlite'),
-  logging: false
-});
+let sequelize;
+if (process.env.DATABASE_URL) {
+  // Production / hosted DB (Postgres) via DATABASE_URL
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    logging: false,
+    dialectOptions: process.env.DB_SSL === 'true' ? { ssl: { rejectUnauthorized: false } } : {}
+  });
+} else {
+  // Local development uses SQLite file
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: path.join(__dirname, '..', 'data', 'database.sqlite'),
+    logging: false
+  });
+}
 
 const User = sequelize.define('User', {
   name: { type: DataTypes.STRING, allowNull: false },

@@ -15,3 +15,27 @@ exports.getReviews = async (req, res) => {
     res.json(reviews);
   } catch (err) { res.status(500).json({ message: err.message }); }
 };
+
+exports.listReviews = async (req, res) => {
+  try {
+    const reviews = await Review.findAll({
+      include: [
+        { model: User, attributes: ['id', 'name', 'email'] },
+        { model: Cafe, attributes: ['id', 'name'] }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.deleteReview = async (req, res) => {
+  try {
+    await Review.destroy({ where: { id: req.params.id } });
+    res.json({ message: 'Deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
