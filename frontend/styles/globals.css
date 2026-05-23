@@ -3,7 +3,49 @@
 @tailwind utilities;
 
 html,body,#__next{height:100%}
-body{background-color:#f6efe8}
+html{scroll-behavior:smooth}
+html{scroll-padding-top:7rem}
+*{box-sizing:border-box}
+body,button,input,textarea,select{font-family:inherit}
+body{
+	background:
+		radial-gradient(circle at top left, rgba(224, 122, 95, 0.12), transparent 28%),
+		radial-gradient(circle at top right, rgba(59, 47, 47, 0.08), transparent 24%),
+		linear-gradient(180deg, #fbf6f1 0%, #f6efe8 45%, #f2e9df 100%);
+	color:#2d241f;
+	-webkit-font-smoothing:antialiased;
+	text-rendering:optimizeLegibility;
+}
+
+:root{
+	color-scheme: light;
+}
+
+.dark{
+	color-scheme: dark;
+}
+
+.dark body{
+	background:
+		radial-gradient(circle at top left, rgba(224, 122, 95, 0.18), transparent 28%),
+		radial-gradient(circle at top right, rgba(255, 255, 255, 0.06), transparent 24%),
+		linear-gradient(180deg, #1f1612 0%, #120d0a 45%, #0f0a08 100%);
+	color:#f8efe7;
+}
 
 .text-coffee{color:#3b2f2f}
 .bg-cream{background-color:#f6efe8}
+
+::selection{
+	background:#e07a5f;
+	color:#fff;
+}
+
+a,button,input,textarea,select{
+	transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease, opacity 180ms ease;
+}
+
+:focus-visible{
+	outline:3px solid rgba(224, 122, 95, 0.65);
+	outline-offset:2px;
+}
