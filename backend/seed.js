@@ -1379,6 +1379,22 @@ async function seed(){
     return `https://www.google.com/maps/search/${encodeURIComponent(query)}`
   }
 
+  const localCafeImages = [
+    '/images/cafe-placeholder-1.svg',
+    '/images/cafe-placeholder-2.svg',
+    '/images/cafe-placeholder-3.svg',
+    '/images/cafe-placeholder-4.svg'
+  ]
+
+  const pickLocalCafeImage = (name) => {
+    const value = String(name || 'Cafe')
+    let hash = 0
+    for (let index = 0; index < value.length; index += 1) {
+      hash = (hash * 31 + value.charCodeAt(index)) >>> 0
+    }
+    return localCafeImages[hash % localCafeImages.length]
+  }
+
   // Helper: only keep entries that look like direct image URLs
   const isLikelyImage = (u) => {
     if (!u || typeof u !== 'string') return false;
@@ -1388,7 +1404,7 @@ async function seed(){
       || u.includes('lh5.googleusercontent.com');
   }
 
-  await Cafe.bulkCreate(sample.map(s => ({
+  await Cafe.bulkCreate(sample.map((s, index) => ({
     name: s.name,
     description: s.description,
     tags: Array.from(new Set([
@@ -1407,14 +1423,9 @@ async function seed(){
     rating: s.rating,
     priceLevel: s.priceLevel,
     wifiSpeed: s.wifiSpeed,
-    images: (s.images || []).filter(isLikelyImage).length
-      ? (s.images || []).filter(isLikelyImage)
-      : [
-          'https://lh3.googleusercontent.com/gps-cs-s/APNQkAEcFLTk-uEHqxgUA3iozuHrVNlHROqVnzL9EDMdwfndJshfKZT4CUaXM5b3dIRr5-XaviLRx6mDGbKdUEEgPT2x7GWuoySxlPrghrGFIgurfaj9VtmNE3J_4XJUqx_gNKBjc9HCZmTGeTpE=w408-h271-k-no',
-          'https://lh3.googleusercontent.com/gps-cs-s/APNQkAFzoNCf5jJUd-f915W-BMTFM0DNCfBXib-5K4UFcUrmr4IcgXFutt8vgkdnpQpGexvMjWL_PEgU1xRAuoRlLV2WAttJ_-rxrS1z2jiDtmRLc4r3emVyIl0bmpfQDuLdsXxB64eWydCi52zg=w408-h306-k-no',
-          'https://lh3.googleusercontent.com/gps-cs-s/APNQkAEcvuqyB_G5FngwYVxRIUQrIKG6qtH7uIu8LBprj8r8QCysMIXz_H6EcWOXM8wsO5ZW5Y1lVKhBTeHENwSjXclc2tFs8B5kW9ZAxKMZ0CnMFpjFPK9CqwYT8zQB9dh_rQ6cDbb5=w426-h240-k-no',
-          'https://lh3.googleusercontent.com/gps-cs-s/APNQkAG0YFzwma9B-PoZ7-mTMLjDvaqS6LLrYSEtXJBqH9BpdrMxGHMpXrLGKj9zuc0nGfsCePNcM0Qo4CTZLSmGcwtCubLbFXzZjIJ20XyGuoKviwYBsfNc3VC9fkLsx0soWjBZw44T=w408-h328-k-no'
-        ],
+    images: (s.images || []).some((image) => String(image || '').startsWith('/images/'))
+      ? (s.images || []).filter((image) => String(image || '').startsWith('/images/'))
+      : [pickLocalCafeImage(s.name || `Cafe ${index + 1}`)],
     location: {
       ...(s.location || {}),
       googleMapsUrl: buildGoogleMapsUrl(s.name, s.location?.address)

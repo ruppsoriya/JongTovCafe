@@ -311,26 +311,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="container mx-auto px-4 py-10 scroll-mt-28">
-          <div className="rounded-[2rem] bg-gradient-to-r from-[#221815] via-[#4b3127] to-[#e07a5f] p-8 text-white shadow-[0_30px_90px_rgba(74,48,33,0.22)]">
-            <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/70">Built for thesis demos</p>
-                <h3 className="mt-3 text-3xl font-bold tracking-tight">Professional enough for a university final project, practical enough to use.</h3>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-white/75">
-                  Clean layout, responsive cards, filtering, recommendations, favorites, reviews, and an admin area all sit on top of a simple REST API with Sequelize and SQLite.
-                </p>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {['Modern UI', 'Search + Filters', 'Favorites', 'Reviews', 'Recommendations', 'Admin tools'].map((item) => (
-                  <div key={item} className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-medium text-white/85 backdrop-blur">
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        
       </main>
 
       <Footer />
