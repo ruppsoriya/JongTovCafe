@@ -63,3 +63,48 @@ Local development
 - Frontend: `cd frontend && npm ci && npm run dev` (set `NEXT_PUBLIC_API_URL` if testing with remote backend)
 
 If you want, paste your `DATABASE_URL` here and I will run the seed remotely for you.
+
+Option 2 — Replit (backend) + Vercel (frontend) + Supabase (free Postgres)
+-------------------------------------------------------------------
+
+This option keeps your current repo structure. Use Supabase free tier for the Postgres database, host the backend on Replit (free) and the frontend on Vercel (free).
+
+1. Create a free Supabase project
+  - Go to https://app.supabase.com and sign up.
+  - Create a new project, choose a strong password and keep the database region close to you.
+  - In the project dashboard → Settings → Database → Connection string, copy the `DATABASE_URL` (Postgres URL).
+
+2. Deploy backend to Replit
+  - Go to https://replit.com, sign in, click **Create** → **Import from GitHub** and paste `https://github.com/ruppsoriya/JongTovCafe`.
+  - Replit will create a workspace. The repo contains a `.replit` file and `start-replit.sh` which will run the backend.
+  - In Replit Settings → Secrets (Environment Variables), add:
+    - `DATABASE_URL` = (the Supabase connection string)
+    - `JWT_SECRET` = (generate a secret)
+    - `GOOGLE_PLACES_API_KEY` = (if needed)
+  - Click **Run**. Replit will execute `start-replit.sh`, install dependencies, and start `backend/server.js`.
+  - Note the Replit web URL (e.g., `https://your-repl.username.repl.co`). Use this as the API base URL.
+
+3. Deploy frontend to Vercel
+  - Import the repo in Vercel (https://vercel.com/new) and pick `ruppsoriya/JongTovCafe`.
+  - Set Environment Variable on Vercel:
+    - `NEXT_PUBLIC_API_URL` = `https://<your-repl>.repl.co` (replace with your Replit URL)
+  - Deploy — Vercel builds the Next.js app and serves it on a Vercel domain.
+
+4. Seed the database
+  - Locally (recommended):
+    ```powershell
+    $env:DATABASE_URL="postgres://user:pass@host:port/dbname"
+    cd backend
+    npm ci
+    npm run seed
+    ```
+  - Or run the seed from within the Replit console (open Shell and run `npm run seed` in `/home/runner/<project>/backend`).
+
+5. Verify
+  - Visit the Replit backend URL `/api/...` endpoints to confirm they respond.
+  - Visit the Vercel frontend URL and test flows.
+
+Notes
+ - Replit sleeps apps on free tier after inactivity; responses may be slower on first request.
+ - Supabase free tier is suitable for development; upgrade when needed.
+
