@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 export const TOKEN_KEY = 'caferecs_token';
 
 export const api = axios.create({
