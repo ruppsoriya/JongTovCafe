@@ -3,6 +3,19 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
 
+// Environment checks (do not print secret values)
+if (!process.env.JWT_SECRET) {
+  console.warn('Warning: JWT_SECRET not set — using insecure default in development');
+}
+if (!process.env.DATABASE_URL) {
+  console.log('No DATABASE_URL found — using local SQLite database');
+} else {
+  console.log('DATABASE_URL detected — using external Postgres database');
+}
+if (!process.env.GOOGLE_PLACES_API_KEY) {
+  console.warn('Google Places API key not set (GOOGLE_PLACES_API_KEY) — some features disabled');
+}
+
 const authRoutes = require('./routes/auth');
 const cafeRoutes = require('./routes/cafes');
 const reviewRoutes = require('./routes/reviews');
@@ -11,6 +24,10 @@ const googleRoutes = require('./routes/google');
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
+
+// IP allowlist middleware (optional) - move after CORS so preflight still works
+const ipAllowlist = require('./middleware/ipAllowlist');
+app.use(ipAllowlist);
 
 const PORT = parseInt(process.env.PORT, 10) || 5000;
 
