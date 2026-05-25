@@ -3,6 +3,9 @@
 
 const allowed = [
   // Edit this array to add allowed IPs or /24 ranges
+  '127.0.0.1',
+  '::1',
+  // cloud / external IP ranges (keep as needed)
   '74.220.48.0/24',
   '74.220.56.0/24',
   '216.151.17.91',
@@ -33,8 +36,6 @@ function ipInRange(ip, range) {
 }
 
 module.exports = function ipAllowlist(req, res, next) {
-  // In development, skip the IP allowlist so localhost and local networks work.
-  if (process.env.NODE_ENV !== 'production') return next();
   const rawIp = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
   const ip = normalizeIp(rawIp);
   if (!ip) return res.status(400).json({ message: 'Unable to determine client IP' });
