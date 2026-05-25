@@ -4,7 +4,6 @@ services:
     env: node
     plan: free
     region: oregon
-    buildCommand: "npm install && npm run build"
     startCommand: "node server.js"
     dockerfilePath: backend/Dockerfile
     envVars:
@@ -14,3 +13,5 @@ services:
         value: "${DATABASE_URL}"
       - key: JWT_SECRET
         value: "${JWT_SECRET}"
+      - key: DB_SSL
+        value: "true"
