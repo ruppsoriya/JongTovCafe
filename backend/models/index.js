@@ -1,8 +1,11 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const path = require('path');
+const { getDatabaseMode } = require('../utils/database');
+
+const { usePostgres } = getDatabaseMode();
 
 let sequelize;
-if (process.env.DATABASE_URL) {
+if (usePostgres) {
   // Production / hosted DB (Postgres) via DATABASE_URL
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',

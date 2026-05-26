@@ -1372,7 +1372,8 @@ const sample = [
 
 async function seed(){
   const { sequelize, Cafe, User } = require('./models');
-  await sequelize.sync({ force: true });
+  // Do not force-drop tables on hosted DBs; create missing tables only
+  await sequelize.sync();
 
   const buildGoogleMapsUrl = (name, address) => {
     const query = [name, address || 'Phnom Penh'].filter(Boolean).join(' ')
@@ -1404,47 +1405,59 @@ async function seed(){
       || u.includes('lh5.googleusercontent.com');
   }
 
-  await Cafe.bulkCreate(sample.map((s, index) => ({
-    name: s.name,
-    description: s.description,
-    tags: Array.from(new Set([
-      ...(s.tags || []),
-      ...(s.wifiSpeed >= 70 ? ['Fast WiFi'] : []),
-      ...(s.rating >= 4.5 ? ['Top Rated'] : []),
-      ...(s.facilities || []).some((facility) => /outdoor/i.test(facility)) ? ['Outdoor seating'] : [],
-      ...(s.facilities || []).some((facility) => /air conditioning/i.test(facility)) ? ['Air conditioning'] : []
-    ])),
-    facilities: Array.from(new Set([
-      ...(s.facilities || []),
-      'Study-friendly',
-      ...(s.wifiSpeed >= 70 ? ['Fast WiFi'] : []),
-      ...(s.rating >= 4.5 ? ['Quiet atmosphere'] : [])
-    ])),
-    rating: s.rating,
-    priceLevel: s.priceLevel,
-    wifiSpeed: s.wifiSpeed,
-    images: (s.images || []).some((image) => String(image || '').startsWith('/images/'))
-      ? (s.images || []).filter((image) => String(image || '').startsWith('/images/'))
-      : [pickLocalCafeImage(s.name || `Cafe ${index + 1}`)],
-    location: {
-      ...(s.location || {}),
-      googleMapsUrl: buildGoogleMapsUrl(s.name, s.location?.address)
-    },
-    popularity: s.popularity,
-    isOpen: s.isOpen,
-    openingHours: s.openingHours || {
-      Mon: '8:00 AM - 10:00 PM',
-      Tue: '8:00 AM - 10:00 PM',
-      Wed: '8:00 AM - 10:00 PM',
-      Thu: '8:00 AM - 10:00 PM',
-      Fri: '8:00 AM - 10:00 PM',
-      Sat: '8:00 AM - 11:00 PM',
-      Sun: '8:00 AM - 11:00 PM'
-    }
-  })));
+  // Create or update cafes (idempotent)
+  for (let index = 0; index < sample.length; index += 1) {
+    const s = sample[index];
+    const values = {
+      name: s.name,
+      description: s.description,
+      tags: Array.from(new Set([
+        ...(s.tags || []),
+        ...(s.wifiSpeed >= 70 ? ['Fast WiFi'] : []),
+        ...(s.rating >= 4.5 ? ['Top Rated'] : []),
+        ...(s.facilities || []).some((facility) => /outdoor/i.test(facility)) ? ['Outdoor seating'] : [],
+        ...(s.facilities || []).some((facility) => /air conditioning/i.test(facility)) ? ['Air conditioning'] : []
+      ])),
+      facilities: Array.from(new Set([
+        ...(s.facilities || []),
+        'Study-friendly',
+        ...(s.wifiSpeed >= 70 ? ['Fast WiFi'] : []),
+        ...(s.rating >= 4.5 ? ['Quiet atmosphere'] : [])
+      ])),
+      rating: s.rating,
+      priceLevel: s.priceLevel,
+      wifiSpeed: s.wifiSpeed,
+      images: (s.images || []).some((image) => String(image || '').startsWith('/images/'))
+        ? (s.images || []).filter((image) => String(image || '').startsWith('/images/'))
+        : [pickLocalCafeImage(s.name || `Cafe ${index + 1}`)],
+      location: {
+        ...(s.location || {}),
+        googleMapsUrl: buildGoogleMapsUrl(s.name, s.location?.address)
+      },
+      popularity: s.popularity,
+      isOpen: s.isOpen,
+      openingHours: s.openingHours || {
+        Mon: '8:00 AM - 10:00 PM',
+        Tue: '8:00 AM - 10:00 PM',
+        Wed: '8:00 AM - 10:00 PM',
+        Thu: '8:00 AM - 10:00 PM',
+        Fri: '8:00 AM - 10:00 PM',
+        Sat: '8:00 AM - 11:00 PM',
+        Sun: '8:00 AM - 11:00 PM'
+      }
+    };
 
+    const existing = await Cafe.findOne({ where: { name: s.name } });
+    if (existing) {
+      await existing.update(values);
+    } else {
+      await Cafe.create(values);
+    }
+  }
+
+  // Upsert admin and demo users by email
   const adminPassword = await bcrypt.hash('admin123', 10);
-  await User.create({
+  await User.upsert({
     name: 'Admin',
     email: 'admin@caferecs.com',
     password: adminPassword,
@@ -1452,7 +1465,7 @@ async function seed(){
   });
 
   const demoPassword = await bcrypt.hash('user123', 10);
-  await User.create({
+  await User.upsert({
     name: 'Demo Student',
     email: 'demo@caferecs.com',
     password: demoPassword,
@@ -1463,7 +1476,7 @@ async function seed(){
     }
   });
 
-  console.log('Seeded cafes, demo user, and admin user (SQLite)');
+  console.log('Seeded cafes, demo user, and admin user');
   process.exit();
 }
 

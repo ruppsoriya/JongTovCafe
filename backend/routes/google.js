@@ -5,16 +5,15 @@ const router = express.Router();
 const API_KEY = process.env.GOOGLE_PLACES_API_KEY;
 
 if (!API_KEY) {
-  console.warn('Google Places API key not set (GOOGLE_PLACES_API_KEY) — /api/google/photo will not work');
+  console.warn('Google Places API key not set (GOOGLE_PLACES_API_KEY) — falling back to Unsplash images');
 }
 
 // GET /api/google/photo?photoReference=... OR ?placeId=... OR ?query=...
 router.get('/photo', async (req, res) => {
   try {
-    if (!API_KEY) return res.status(500).json({ message: 'Server missing GOOGLE_PLACES_API_KEY' });
-
     const { photoReference, placeId, query } = req.query;
     let ref = photoReference;
+    const useUnsplashFallback = !API_KEY;
 
     if (!ref && placeId) {
       // get place details
@@ -36,7 +35,19 @@ router.get('/photo', async (req, res) => {
       }
     }
 
-    if (!ref) return res.status(404).json({ message: 'No photo reference found for that query' });
+    if (!ref) {
+      // If we have no photo reference, try Unsplash fallback when possible.
+      if (useUnsplashFallback && query) {
+        const unsplashUrl = `https://source.unsplash.com/800x600/?${encodeURIComponent(query)}`;
+        const resp = await axios.get(unsplashUrl, { responseType: 'stream', maxRedirects: 5 });
+        res.setHeader('Content-Type', resp.headers['content-type'] || 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        resp.data.pipe(res);
+        return;
+      }
+
+      return res.status(404).json({ message: 'No photo reference found for that query' });
+    }
 
     const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${encodeURIComponent(ref)}&key=${API_KEY}`;
 

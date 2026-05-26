@@ -1,17 +1,22 @@
 services:
   - type: web
     name: cafe-recs-backend
-    env: node
+    runtime: docker
     plan: free
     region: oregon
-    startCommand: "node server.js"
     dockerfilePath: backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /
     envVars:
-      - key: PORT
-        value: "5000"
       - key: DATABASE_URL
-        value: "${DATABASE_URL}"
-      - key: JWT_SECRET
-        value: "${JWT_SECRET}"
+        fromDatabase:
+          name: cafe-recs-db
+          property: connectionString
       - key: DB_SSL
         value: "true"
+      - key: JWT_SECRET
+        sync: false
+databases:
+  - name: cafe-recs-db
+    plan: basic-256mb
+    region: oregon

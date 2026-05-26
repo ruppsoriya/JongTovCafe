@@ -1,6 +1,8 @@
 // Simple IP allowlist middleware
 // Supports exact IPs and /24 CIDR ranges (e.g. 74.220.48.0/24)
 
+const allowlistEnabled = process.env.ENABLE_IP_ALLOWLIST === 'true';
+
 const allowed = [
   // Edit this array to add allowed IPs or /24 ranges
   '127.0.0.1',
@@ -36,6 +38,8 @@ function ipInRange(ip, range) {
 }
 
 module.exports = function ipAllowlist(req, res, next) {
+  if (!allowlistEnabled) return next();
+
   const rawIp = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
   const ip = normalizeIp(rawIp);
   if (!ip) return res.status(400).json({ message: 'Unable to determine client IP' });

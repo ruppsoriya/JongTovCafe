@@ -23,4 +23,6 @@ jobs:
         working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DB_SSL: ${{ secrets.DB_SSL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: npm run seed

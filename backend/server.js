@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
+const { getDatabaseMode } = require('./utils/database');
+
+const databaseMode = getDatabaseMode();
 
 // Environment checks (do not print secret values)
 if (!process.env.JWT_SECRET) {
@@ -9,8 +12,10 @@ if (!process.env.JWT_SECRET) {
 }
 if (!process.env.DATABASE_URL) {
   console.log('No DATABASE_URL found — using local SQLite database');
-} else {
+} else if (databaseMode.usePostgres) {
   console.log('DATABASE_URL detected — using external Postgres database');
+} else {
+  console.log('DATABASE_URL points to a local Docker hostname — using SQLite database instead');
 }
 if (!process.env.GOOGLE_PLACES_API_KEY) {
   console.warn('Google Places API key not set (GOOGLE_PLACES_API_KEY) — some features disabled');
@@ -36,7 +41,7 @@ const { sequelize } = require('./models');
 async function connectDb() {
   try {
     await sequelize.sync();
-    console.log('SQLite (Sequelize) connected and synced');
+    console.log('Sequelize database connected and synced');
   } catch (err) { console.error('DB connection error', err); }
 }
 
