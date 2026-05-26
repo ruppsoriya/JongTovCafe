@@ -1,11 +1,12 @@
 services:
   - type: web
     name: cafe-recs-backend
-    runtime: docker
+    runtime: node
     plan: free
     region: oregon
-    dockerfilePath: backend/Dockerfile
-    dockerContext: .
+    rootDir: backend
+    buildCommand: npm ci --omit=dev
+    startCommand: node server.js
     healthCheckPath: /
     envVars:
       - key: DATABASE_URL
