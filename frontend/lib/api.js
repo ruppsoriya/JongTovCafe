@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const DEFAULT_API_BASE = process.env.NODE_ENV === 'production'
+  ? 'https://cafe-recs-backend.onrender.com'
+  : 'http://localhost:5000';
+
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_BASE;
 export const TOKEN_KEY = 'caferecs_token';
 
 export const api = axios.create({

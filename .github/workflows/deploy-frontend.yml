@@ -11,10 +11,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20
+        uses: amondnet/vercel-action@v42
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-args: '--prod'
+          build-env: |
+            NEXT_PUBLIC_API_URL=https://cafe-recs-backend.onrender.com
           working-directory: frontend
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
