@@ -33,7 +33,7 @@ response="$(curl -sS --fail-with-body -X POST "https://api.render.com/v1/service
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $RENDER_API_KEY" \
-  -d '{"clearCache":true}')"
+  -d '{"clearCache":"clear"}')"
 
 if command -v jq >/dev/null 2>&1; then
   echo "$response" | jq '.'
