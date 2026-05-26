@@ -35,9 +35,8 @@ export function resolveCafeImageSource(cafe, apiBase) {
   const directImage = resolveCafeImage(cafe?.images?.[0])
   if (directImage) return directImage
 
-  if (!apiBase) return null
-
   const name = cafe?.name || 'Cafe'
   const address = cafe?.location?.address || 'Phnom Penh'
-  return `${apiBase}/api/google/photo?query=${encodeURIComponent(`${name} ${address}`)}`
+  const query = encodeURIComponent(`${name} ${address}`)
+  return `https://source.unsplash.com/800x600/?cafe,coffee,${query}`
 }
