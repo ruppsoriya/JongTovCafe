@@ -16,7 +16,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-args: '--prod'
           build-env: |
-            NEXT_PUBLIC_API_URL=https://cafe-recs-backend.onrender.com
+            NEXT_PUBLIC_API_URL=https://jongtovcafe.onrender.com
           working-directory: frontend
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}

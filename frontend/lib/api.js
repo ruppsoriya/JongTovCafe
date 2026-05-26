@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const DEFAULT_API_BASE = process.env.NODE_ENV === 'production'
-  ? 'https://cafe-recs-backend.onrender.com'
+  ? 'https://jongtovcafe.onrender.com'
   : 'http://localhost:5000';
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_BASE;
