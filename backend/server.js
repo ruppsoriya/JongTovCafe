@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const { execFileSync } = require('child_process');
+const path = require('path');
 dotenv.config();
 const { getDatabaseMode } = require('./utils/database');
 
@@ -36,12 +38,20 @@ app.use(ipAllowlist);
 
 const PORT = parseInt(process.env.PORT, 10) || 5000;
 
-const { sequelize } = require('./models');
+const { sequelize, Cafe } = require('./models');
 
 async function connectDb() {
   try {
     await sequelize.sync();
     console.log('Sequelize database connected and synced');
+
+    const cafeCount = await Cafe.count();
+    if (cafeCount === 0) {
+      console.log('No cafes found, running seed script');
+      execFileSync(process.execPath, [path.join(__dirname, 'seed.js')], {
+        stdio: 'inherit'
+      });
+    }
   } catch (err) { console.error('DB connection error', err); }
 }
 
