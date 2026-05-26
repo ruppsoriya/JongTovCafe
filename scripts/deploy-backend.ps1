@@ -10,7 +10,7 @@ if ([string]::IsNullOrWhiteSpace($RenderApiKey)) { $missing += 'RENDER_API_KEY o
 if ($missing.Count -gt 0) {
     Write-Host "Missing required value(s): $($missing -join ', ')" -ForegroundColor Red
     Write-Host "Example:" -ForegroundColor Yellow
-    Write-Host "  ./scripts/deploy-backend.ps1 -RenderServiceId 'srv-xxxxx' -RenderApiKey 'rnd_xxxxx'"
+    Write-Host "  .\scripts\deploy-backend.ps1 -RenderServiceId 'srv-xxxxx' -RenderApiKey 'rnd_xxxxx'"
     exit 1
 }
 
@@ -19,14 +19,10 @@ if (-not $RenderServiceId.StartsWith('srv-')) {
 }
 
 Write-Host "Triggering deploy for Render service $RenderServiceId"
-
-$headers = @(
-    '-H', 'Accept: application/json',
-    '-H', "Authorization: Bearer $RenderApiKey",
-    '-H', 'Content-Type: application/json'
-)
-
-curl.exe -sS -X POST "https://api.render.com/v1/services/$RenderServiceId/deploys" @headers -d "{}"
+curl.exe -sS --fail-with-body -X POST "https://api.render.com/v1/services/$RenderServiceId/deploys" `
+    -H "Authorization: Bearer $RenderApiKey" `
+    -H "Content-Type: application/json" `
+    -d '{"clearCache":"clear"}'
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Render deploy request failed." -ForegroundColor Red
     exit $LASTEXITCODE
