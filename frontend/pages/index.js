@@ -6,6 +6,7 @@ import FiltersSidebar from '../components/FiltersSidebar'
 import CafeCard from '../components/CafeCard'
 import Footer from '../components/Footer'
 import { api } from '../lib/api'
+import localCafes from '../lib/localCafes'
 
 const initialFilters = {
   minRating: '',
@@ -69,14 +70,43 @@ export default function Home() {
     return params
   }
 
+  const filterLocalCafes = (currentFilters = filters, currentQuery = query) => {
+    const queryText = String(currentQuery || '').trim().toLowerCase()
+    return localCafes.filter((cafe) => {
+      const tagList = (cafe.tags || []).map((item) => String(item).toLowerCase())
+      const facilityList = (cafe.facilities || []).map((item) => String(item).toLowerCase())
+      const name = String(cafe.name || '').toLowerCase()
+      const description = String(cafe.description || '').toLowerCase()
+
+      if (queryText && !`${name} ${description} ${(cafe.location?.address || '')}`.toLowerCase().includes(queryText)) {
+        return false
+      }
+      if (currentFilters.minRating && Number(cafe.rating || 0) < Number(currentFilters.minRating)) return false
+      if (currentFilters.maxPrice && Number(cafe.priceLevel || 0) > Number(currentFilters.maxPrice)) return false
+      if (currentFilters.openNow && cafe.isOpen === false) return false
+      if (currentFilters.fastWifi && !(Number(cafe.wifiSpeed || 0) >= 70 || tagList.includes('fast wifi') || facilityList.includes('fast wifi'))) return false
+      if (currentFilters.studyFriendly && !(tagList.includes('study-friendly') || facilityList.includes('study-friendly'))) return false
+      if (currentFilters.quiet && !(tagList.includes('quiet') || facilityList.includes('quiet atmosphere'))) return false
+      if (currentFilters.familyFriendly && !(tagList.includes('family-friendly') || facilityList.includes('family-friendly'))) return false
+      if (currentFilters.outdoorSeating && !(tagList.includes('outdoor seating') || facilityList.includes('outdoor seating'))) return false
+      if (currentFilters.airConditioning && !(tagList.includes('air conditioning') || facilityList.includes('air conditioning'))) return false
+      return true
+    })
+  }
+
+  const getLocalRecommendations = (currentFilters = filters, currentQuery = query) => {
+    const filtered = filterLocalCafes(currentFilters, currentQuery)
+    return [...filtered].sort((a, b) => Number(b.popularity || 0) - Number(a.popularity || 0))
+  }
+
   const loadCafes = async (currentFilters = filters, currentQuery = query) => {
     setLoading(true)
     try {
       const { data } = await api.get('/cafes', { params: buildParams(currentFilters, currentQuery) })
-      setCafes(data)
+      setCafes(Array.isArray(data) && data.length ? data : filterLocalCafes(currentFilters, currentQuery))
     } catch (error) {
       console.error('Error fetching cafes:', error)
-      setCafes([])
+      setCafes(filterLocalCafes(currentFilters, currentQuery))
     } finally {
       setLoading(false)
     }
@@ -96,10 +126,10 @@ export default function Home() {
         outdoorSeating: currentFilters.outdoorSeating
       }
       const { data } = await api.get('/cafes/recommend', { params: { prefs: JSON.stringify(prefs) } })
-      setRecommended(Array.isArray(data) ? data : [])
+      setRecommended(Array.isArray(data) && data.length ? data : getLocalRecommendations(currentFilters).slice(0, 3))
     } catch (error) {
       console.error('Error fetching recommendations:', error)
-      setRecommended([])
+      setRecommended(getLocalRecommendations(currentFilters).slice(0, 3))
     } finally {
       setRecommendLoading(false)
     }
@@ -130,10 +160,10 @@ export default function Home() {
             outdoorSeating: nextFilters.outdoorSeating
           }
           const { data } = await api.get('/cafes/recommend', { params: { prefs: JSON.stringify(prefs) } })
-          setRecommended(Array.isArray(data) ? data : [])
+          setRecommended(Array.isArray(data) && data.length ? data : getLocalRecommendations(nextFilters, nextQuery).slice(0, 3))
         } catch (error) {
           console.error('Error fetching recommendations:', error)
-          setRecommended([])
+          setRecommended(getLocalRecommendations(nextFilters, nextQuery).slice(0, 3))
         } finally {
           setRecommendLoading(false)
         }

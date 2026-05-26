@@ -9,6 +9,7 @@ import RatingStars from '../../components/RatingStars'
 import { api, API_BASE } from '../../lib/api'
 import { resolveCafeImageSource } from '../../lib/image'
 import { useAuth } from '../../context/AuthContext'
+import { getLocalCafeById } from '../../lib/localCafes'
 
 function MenuPreview({ cafe }) {
   const items = useMemo(() => {
@@ -391,6 +392,6 @@ export async function getServerSideProps({ params }) {
     const response = await axios.get(`${API_BASE}/api/cafes/${params.id}`)
     return { props: { cafe: response.data } }
   } catch (error) {
-    return { props: { cafe: null } }
+    return { props: { cafe: getLocalCafeById(params.id) } }
   }
 }
