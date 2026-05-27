@@ -1,41 +1,49 @@
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import { useAuth } from '../context/AuthContext'
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
-  const { user, logout } = useAuth()
-  const router = useRouter()
-  const [theme, setTheme] = useState('light')
+  const { user, logout } = useAuth();
+  const router = useRouter();
+  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    const storedTheme = window.localStorage.getItem('cafe-theme')
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-    const nextTheme = storedTheme || (prefersDark ? 'dark' : 'light')
-    setTheme(nextTheme)
-    document.documentElement.classList.toggle('dark', nextTheme === 'dark')
-  }, [])
+    if (typeof window === "undefined") return;
+    const storedTheme = window.localStorage.getItem("cafe-theme");
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const nextTheme = storedTheme || (prefersDark ? "dark" : "light");
+    setTheme(nextTheme);
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+  }, []);
 
   const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(nextTheme)
-    document.documentElement.classList.toggle('dark', nextTheme === 'dark')
-    window.localStorage.setItem('cafe-theme', nextTheme)
-  }
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    window.localStorage.setItem("cafe-theme", nextTheme);
+  };
 
   const handleLogout = () => {
-    logout()
-    router.push('/')
-  }
+    logout();
+    router.push("/");
+  };
 
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-white/20 bg-[#1f1814]/85 text-white shadow-[0_10px_30px_rgba(31,24,20,0.18)] backdrop-blur-xl">
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-[#1f1814]">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-[#1f1814]"
+        >
           Skip to content
         </a>
-        <Link href="/" className="flex items-center gap-3 text-xl font-bold tracking-tight text-white">
+        <Link
+          href="/"
+          className="flex items-center gap-3 text-xl font-bold tracking-tight text-white"
+        >
           <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 via-orange-400 to-red-400 text-2xl text-[#1f1814] shadow-lg">
             ☕
           </span>
@@ -43,17 +51,29 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-6 md:flex">
-          <Link href="/" className="text-sm font-medium text-white/80 transition hover:text-white">
+          <Link
+            href="/"
+            className="text-sm font-medium text-white/80 transition hover:text-white"
+          >
             Home
           </Link>
-          <Link href="/#recommendations" className="text-sm font-medium text-white/80 transition hover:text-white">
+          <Link
+            href="/#recommendations"
+            className="text-sm font-medium text-white/80 transition hover:text-white"
+          >
             Recommendations
           </Link>
-          <Link href="/profile" className="text-sm font-medium text-white/80 transition hover:text-white">
+          <Link
+            href="/profile"
+            className="text-sm font-medium text-white/80 transition hover:text-white"
+          >
             Favorites
           </Link>
-          {user?.role === 'admin' && (
-            <Link href="/dashboard" className="text-sm font-medium text-white/80 transition hover:text-white">
+          {user?.role === "admin" && (
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium text-white/80 transition hover:text-white"
+            >
               Admin
             </Link>
           )}
@@ -66,7 +86,7 @@ export default function Navbar() {
             className="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-medium text-white transition hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-amber-300"
             aria-label="Toggle theme"
           >
-            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            {theme === "dark" ? "Light mode" : "Dark mode"}
           </button>
           {user ? (
             <>
@@ -86,7 +106,10 @@ export default function Navbar() {
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Link href="/login" className="text-sm font-medium text-white/80 transition hover:text-white">
+              <Link
+                href="/login"
+                className="text-sm font-medium text-white/80 transition hover:text-white"
+              >
                 Login
               </Link>
               <Link
@@ -100,5 +123,5 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }

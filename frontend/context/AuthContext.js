@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { api, clearToken, getToken, setToken } from '../lib/api';
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { api, clearToken, getToken, setToken } from "../lib/api";
 
 const AuthContext = createContext(null);
 
@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
       return;
     }
     try {
-      const { data } = await api.get('/auth/me');
+      const { data } = await api.get("/auth/me");
       setUser(data);
     } catch (e) {
       clearToken();
@@ -30,14 +30,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password });
+    const { data } = await api.post("/auth/login", { email, password });
     setToken(data.token);
     setUser(data.user);
     return data.user;
   };
 
   const signup = async (name, email, password) => {
-    const { data } = await api.post('/auth/register', { name, email, password });
+    const { data } = await api.post("/auth/register", {
+      name,
+      email,
+      password,
+    });
     setToken(data.token);
     setUser(data.user);
     return data.user;
@@ -48,7 +52,10 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const value = useMemo(() => ({ user, loading, login, signup, logout, refreshMe }), [user, loading]);
+  const value = useMemo(
+    () => ({ user, loading, login, signup, logout, refreshMe }),
+    [user, loading],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

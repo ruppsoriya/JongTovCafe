@@ -1,28 +1,29 @@
-import axios from 'axios';
+import axios from "axios";
 
-const DEFAULT_API_BASE = process.env.NODE_ENV === 'production'
-  ? 'https://jongtovcafe.onrender.com'
-  : 'http://localhost:5000';
+const DEFAULT_API_BASE =
+  process.env.NODE_ENV === "production"
+    ? "https://jongtovcafe.onrender.com"
+    : "http://localhost:5000";
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_BASE;
-export const TOKEN_KEY = 'caferecs_token';
+export const TOKEN_KEY = "caferecs_token";
 
 export const api = axios.create({
-  baseURL: `${API_BASE}/api`
+  baseURL: `${API_BASE}/api`,
 });
 
 export function getToken() {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   return localStorage.getItem(TOKEN_KEY);
 }
 
 export function setToken(token) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   localStorage.setItem(TOKEN_KEY, token);
 }
 
 export function clearToken() {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   localStorage.removeItem(TOKEN_KEY);
 }
 
