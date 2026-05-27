@@ -35,6 +35,7 @@ export default function Home() {
   const [filters, setFilters] = useState(initialFilters)
   const [loading, setLoading] = useState(true)
   const [recommendLoading, setRecommendLoading] = useState(true)
+  const [showAllCafes, setShowAllCafes] = useState(true)
 
   const activeTags = useMemo(() => {
     const tags = []
@@ -126,10 +127,10 @@ export default function Home() {
         outdoorSeating: currentFilters.outdoorSeating
       }
       const { data } = await api.get('/cafes/recommend', { params: { prefs: JSON.stringify(prefs) } })
-      setRecommended(Array.isArray(data) && data.length ? data : getLocalRecommendations(currentFilters).slice(0, 3))
+      setRecommended(Array.isArray(data) && data.length ? data.slice(0, 8) : getLocalRecommendations(currentFilters).slice(0, 8))
     } catch (error) {
       console.error('Error fetching recommendations:', error)
-      setRecommended(getLocalRecommendations(currentFilters).slice(0, 3))
+      setRecommended(getLocalRecommendations(currentFilters).slice(0, 8))
     } finally {
       setRecommendLoading(false)
     }
@@ -160,10 +161,10 @@ export default function Home() {
             outdoorSeating: nextFilters.outdoorSeating
           }
           const { data } = await api.get('/cafes/recommend', { params: { prefs: JSON.stringify(prefs) } })
-          setRecommended(Array.isArray(data) && data.length ? data : getLocalRecommendations(nextFilters, nextQuery).slice(0, 3))
+          setRecommended(Array.isArray(data) && data.length ? data.slice(0, 8) : getLocalRecommendations(nextFilters, nextQuery).slice(0, 8))
         } catch (error) {
           console.error('Error fetching recommendations:', error)
-          setRecommended(getLocalRecommendations(nextFilters, nextQuery).slice(0, 3))
+          setRecommended(getLocalRecommendations(nextFilters, nextQuery).slice(0, 8))
         } finally {
           setRecommendLoading(false)
         }
@@ -189,9 +190,12 @@ export default function Home() {
   }, [])
 
   const featuredCafes = cafes.slice(0, 8)
+  const visibleCafes = showAllCafes ? cafes : featuredCafes
   const popularCafes = [...cafes].sort((a, b) => Number(b.popularity || 0) - Number(a.popularity || 0)).slice(0, 6)
   const openCount = cafes.filter((cafe) => cafe.isOpen !== false).length
   const averageRating = cafes.length ? (cafes.reduce((sum, cafe) => sum + Number(cafe.rating || 0), 0) / cafes.length).toFixed(1) : '0.0'
+
+  const cafeGridClass = "grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
 
   return (
     <div className="min-h-screen text-[#231913] dark:text-[#f7ede5]">
@@ -279,14 +283,14 @@ export default function Home() {
           </div>
 
           {recommendLoading && !recommended.length ? (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, index) => (
+            <div className={cafeGridClass}>
+              {Array.from({ length: 8 }).map((_, index) => (
                 <div key={index} className="h-96 animate-pulse rounded-3xl bg-white/70 dark:bg-white/5" />
               ))}
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {recommended.slice(0, 6).map((cafe) => (
+            <div className={cafeGridClass}>
+              {recommended.map((cafe) => (
                 <CafeCard key={cafe.id} cafe={cafe} />
               ))}
             </div>
@@ -307,13 +311,13 @@ export default function Home() {
           </div>
 
           {loading ? (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <div className={cafeGridClass}>
               {Array.from({ length: 4 }).map((_, index) => (
                 <div key={index} className="h-96 animate-pulse rounded-3xl bg-white/70 dark:bg-white/5" />
               ))}
             </div>
           ) : featuredCafes.length ? (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <div className={cafeGridClass}>
               {featuredCafes.map((cafe) => (
                 <CafeCard key={cafe.id || cafe._id} cafe={cafe} />
               ))}
@@ -323,6 +327,47 @@ export default function Home() {
               <div className="text-5xl">☕</div>
               <p className="mt-4 text-xl font-semibold">No cafes matched that filter set.</p>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Try widening the rating or price range, or reset the filters.</p>
+            </div>
+          )}
+        </section>
+
+        <section className="container mx-auto px-4 py-8 scroll-mt-28">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-700 dark:text-amber-200">Browse</p>
+              <h2 id="all-cafes" className="mt-2 text-3xl font-bold tracking-tight text-[#221815] dark:text-white">
+                All cafes
+              </h2>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                {showAllCafes ? `Showing all ${cafes.length} cafes` : `Showing ${visibleCafes.length} of ${cafes.length} cafes`}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowAllCafes((current) => !current)}
+              className="rounded-full border border-amber-200 bg-white px-4 py-2 text-sm font-semibold text-amber-800 transition hover:border-amber-300 hover:bg-amber-50 dark:border-white/10 dark:bg-white/5 dark:text-amber-100"
+            >
+              {showAllCafes ? 'Show featured cafes' : 'Show all cafes'}
+            </button>
+          </div>
+
+          {loading ? (
+            <div className={cafeGridClass}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="h-96 animate-pulse rounded-3xl bg-white/70 dark:bg-white/5" />
+              ))}
+            </div>
+          ) : visibleCafes.length ? (
+            <div className={cafeGridClass}>
+              {visibleCafes.map((cafe) => (
+                <CafeCard key={cafe.id || cafe._id} cafe={cafe} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-amber-300 bg-white/80 p-10 text-center dark:border-white/10 dark:bg-white/5">
+              <div className="text-5xl">☕</div>
+              <p className="mt-4 text-xl font-semibold">No cafes available yet.</p>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Try refreshing the results or check back after the cafe data is seeded.</p>
             </div>
           )}
         </section>

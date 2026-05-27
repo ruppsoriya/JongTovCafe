@@ -22,7 +22,6 @@ RUN npm ci --only=production
 # Copy built assets and necessary files
 COPY --from=builder /usr/src/app/.next .next
 COPY --from=builder /usr/src/app/public ./public
-COPY --from=builder /usr/src/app/next.config.js ./next.config.js
 
 ENV NODE_ENV=production
 ENV PORT=3000

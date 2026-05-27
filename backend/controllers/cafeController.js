@@ -28,7 +28,7 @@ exports.listCafes = async (req, res) => {
     if (maxPrice) where.priceLevel = { [Op.lte]: Number(maxPrice) };
     if (openNow) where.isOpen = openNow === 'true';
 
-    let cafes = await Cafe.findAll({ where, limit: 500 });
+    let cafes = await Cafe.findAll({ where });
 
     // SQLite JSON filtering is limited, so apply feature filters in memory.
     cafes = cafes.filter((cafe) => {
@@ -88,9 +88,9 @@ exports.deleteCafe = async (req, res) => {
 
 exports.recommend = async (req, res) => {
   try {
-    const cafes = await Cafe.findAll({ limit: 500 });
+    const cafes = await Cafe.findAll();
     const userPrefs = req.query.prefs ? JSON.parse(req.query.prefs) : {};
     const recs = recommendUtil.recommend(cafes.map(c => c.toJSON()), userPrefs);
-    res.json(recs.slice(0, 20));
+    res.json(recs);
   } catch (err) { res.status(500).json({ message: err.message }); }
 };

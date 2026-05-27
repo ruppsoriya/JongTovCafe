@@ -19,14 +19,11 @@ if (!process.env.DATABASE_URL) {
 } else {
   console.log('DATABASE_URL points to a local Docker hostname — using SQLite database instead');
 }
-if (!process.env.GOOGLE_PLACES_API_KEY) {
-  console.warn('Google Places API key not set (GOOGLE_PLACES_API_KEY) — some features disabled');
-}
 
 const authRoutes = require('./routes/auth');
 const cafeRoutes = require('./routes/cafes');
 const reviewRoutes = require('./routes/reviews');
-const googleRoutes = require('./routes/google');
+const imageRoutes = require('./routes/images');
 
 const app = express();
 app.use(cors());
@@ -60,7 +57,7 @@ connectDb();
 app.use('/api/auth', authRoutes);
 app.use('/api/cafes', cafeRoutes);
 app.use('/api/reviews', reviewRoutes);
-app.use('/api/google', googleRoutes);
+app.use('/api/images', imageRoutes);
 
 app.get('/', (req, res) => res.send({ ok: true, msg: 'Cafe Recs API' }));
 
