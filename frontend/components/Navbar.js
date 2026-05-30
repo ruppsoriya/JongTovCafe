@@ -79,6 +79,35 @@ export default function Navbar() {
           )}
         </div>
 
+        <div className="flex w-full items-center gap-3 overflow-x-auto pb-1 md:hidden">
+          <Link
+            href="/"
+            className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
+          >
+            Home
+          </Link>
+          <Link
+            href="/#recommendations"
+            className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
+          >
+            Recommendations
+          </Link>
+          <Link
+            href="/profile"
+            className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
+          >
+            Favorites
+          </Link>
+          {user?.role === "admin" && (
+            <Link
+              href="/dashboard"
+              className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
+            >
+              Admin
+            </Link>
+          )}
+        </div>
+
         <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
           <button
             type="button"
