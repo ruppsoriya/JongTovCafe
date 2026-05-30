@@ -33,7 +33,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-white/20 bg-[#1f1814]/85 text-white shadow-[0_10px_30px_rgba(31,24,20,0.18)] backdrop-blur-xl">
-      <div className="container mx-auto flex items-center justify-between px-4 py-4">
+      <div className="container mx-auto flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:py-4">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-[#1f1814]"
@@ -42,12 +42,12 @@ export default function Navbar() {
         </a>
         <Link
           href="/"
-          className="flex items-center gap-3 text-xl font-bold tracking-tight text-white"
+          className="flex min-w-0 items-center gap-3 text-lg font-bold tracking-tight text-white sm:text-xl"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 via-orange-400 to-red-400 text-2xl text-[#1f1814] shadow-lg">
             ☕
           </span>
-          <span>Jong Tov Cafe</span>
+          <span className="hidden sm:inline">Jong Tov Cafe</span>
         </Link>
 
         <div className="hidden items-center gap-6 md:flex">
@@ -79,14 +79,17 @@ export default function Navbar() {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
           <button
             type="button"
             onClick={toggleTheme}
-            className="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-sm font-medium text-white transition hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-amber-300"
+            className="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white transition hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-amber-300 sm:text-sm"
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? "Light mode" : "Dark mode"}
+            <span className="sm:hidden">Theme</span>
+            <span className="hidden sm:inline">
+              {theme === "dark" ? "Light mode" : "Dark mode"}
+            </span>
           </button>
           {user ? (
             <>
@@ -99,7 +102,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded-full bg-gradient-to-r from-amber-300 to-orange-400 px-4 py-2 text-sm font-semibold text-[#1f1814] transition hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-amber-300"
+                className="rounded-full bg-gradient-to-r from-amber-300 to-orange-400 px-3 py-2 text-xs font-semibold text-[#1f1814] transition hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-amber-300 sm:px-4 sm:text-sm"
               >
                 Logout
               </button>
@@ -108,13 +111,13 @@ export default function Navbar() {
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="text-sm font-medium text-white/80 transition hover:text-white"
+                className="text-xs font-medium text-white/80 transition hover:text-white sm:text-sm"
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="rounded-full bg-gradient-to-r from-amber-300 to-orange-400 px-4 py-2 text-sm font-semibold text-[#1f1814] transition hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-amber-300"
+                className="rounded-full bg-gradient-to-r from-amber-300 to-orange-400 px-3 py-2 text-xs font-semibold text-[#1f1814] transition hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-amber-300 sm:px-4 sm:text-sm"
               >
                 Sign up
               </Link>

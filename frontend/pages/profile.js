@@ -10,8 +10,7 @@ export default function Profile() {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const cafeGridClass =
-    "grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6";
+  const cafeGridClass = "grid gap-6 grid-cols-1 lg:grid-cols-2";
 
   const loadFavorites = async () => {
     setLoading(true);
@@ -42,7 +41,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen text-[#231913] dark:text-[#f7ede5]">
       <Navbar />
-      <main className="container mx-auto px-4 pb-16 pt-28">
+      <main className="container mx-auto px-4 pb-16 pt-32 lg:pt-36">
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <section className="rounded-[2rem] bg-gradient-to-br from-[#221815] via-[#4b3127] to-[#e07a5f] p-8 text-white shadow-[0_30px_90px_rgba(74,48,33,0.22)]">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/70">
