@@ -47,7 +47,7 @@ export default function Navbar() {
           <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 via-orange-400 to-red-400 text-2xl text-[#1f1814] shadow-lg">
             ☕
           </span>
-          <span className="hidden sm:inline">Jong Tov Cafe</span>
+          <span className="sm:inline">Jong Tov Cafe</span>
         </Link>
 
         <div className="hidden items-center gap-6 md:flex">
@@ -79,36 +79,73 @@ export default function Navbar() {
           )}
         </div>
 
-        <div className="flex w-full items-center gap-3 overflow-x-auto pb-1 md:hidden">
-          <Link
-            href="/"
-            className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
-          >
-            Home
-          </Link>
-          <Link
-            href="/#recommendations"
-            className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
-          >
-            Recommendations
-          </Link>
-          <Link
-            href="/profile"
-            className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
-          >
-            Favorites
-          </Link>
-          {user?.role === "admin" && (
+        <div className="flex w-full flex-col gap-3 md:hidden">
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white transition hover:bg-white/15 focus-visible:ring-2 focus-visible:ring-amber-300"
+              aria-label="Toggle theme"
+            >
+              Theme
+            </button>
+            {user ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-full bg-gradient-to-r from-amber-300 to-orange-400 px-3 py-2 text-xs font-semibold text-[#1f1814] transition hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-amber-300"
+              >
+                Logout
+              </button>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-xs font-medium text-white/80 transition hover:text-white"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="rounded-full bg-gradient-to-r from-amber-300 to-orange-400 px-3 py-2 text-xs font-semibold text-[#1f1814] transition hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-amber-300"
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
             <Link
-              href="/dashboard"
+              href="/"
               className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
             >
-              Admin
+              Home
             </Link>
-          )}
+            <Link
+              href="/#recommendations"
+              className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
+            >
+              Recommendations
+            </Link>
+            <Link
+              href="/profile"
+              className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
+            >
+              Favorites
+            </Link>
+            {user?.role === "admin" && (
+              <Link
+                href="/dashboard"
+                className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white/90 transition hover:bg-white/15"
+              >
+                Admin
+              </Link>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-end gap-2 sm:flex-none">
+        <div className="hidden flex-1 items-center justify-end gap-2 md:flex">
           <button
             type="button"
             onClick={toggleTheme}
